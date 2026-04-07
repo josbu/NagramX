@@ -730,6 +730,7 @@ public abstract class BlurredBackgroundDrawable extends Drawable {
     private final Rect ninePatchDrawablePadding = new Rect();
     private NinePatchDrawable ninePatchDrawable;
     private long ninePatchDrawableHash;
+    private Bitmap[] ninePatchRef;
 
     private NinePatchDrawable checkNinePatchDrawable(int fillColor) {
         ninePatchHashBuilder.start();
@@ -746,9 +747,9 @@ public abstract class BlurredBackgroundDrawable extends Drawable {
 
             // ninePatchDrawable = ninePatchDrawablesPool.get(hash);
             //if (ninePatchDrawable == null) {
-                ninePatchDrawable = NinePatchBuilder.createNinePatch(
+                ninePatchDrawable = NinePatchBuilder.createNinePatch(ninePatchRef,
                         fillColor, boundProps.radii, shadowLayerRadius,
-                        shadowColor, shadowLayerDx, shadowLayerDy);
+                        shadowColor, shadowLayerDx, shadowLayerDy, NinePatchBuilder.NO_COLOR);
                 //ninePatchDrawablesPool.put(hash, ninePatchDrawable);
             //}
             ninePatchDrawable.getPadding(ninePatchDrawablePadding);
