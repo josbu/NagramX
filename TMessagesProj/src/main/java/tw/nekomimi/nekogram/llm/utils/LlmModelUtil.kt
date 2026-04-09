@@ -26,7 +26,7 @@ object LlmModelUtil {
     @JvmStatic
     fun isGemma4(model: String?): Boolean {
         val base = getBaseModelName(model).lowercase()
-        return base.contains("gemma") && base.contains("4")
+        return base.contains("gemma4") || base.contains("gemma-4")
     }
 
     @JvmStatic
