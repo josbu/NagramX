@@ -116,7 +116,7 @@
     <string name="PasscodeNeeded">Сначала необходимо включить блокировку паролем</string>
     <string name="PasscodeNeko">Пароль</string>
     <string name="PasscodeShowInSettings">Показывать в «Настройках N»</string>
-    <string name="PasscodeShowInSettingsAbout">После скрытия вы сможете **ТОЛЬКО** открыть эту страницу по ссылке:</string>
+    <string name="PasscodeShowInSettingsAbout">После скрытия вы сможете открыть эту страницу **ТОЛЬКО** по ссылке:</string>
     <string name="PasscodeSet">Установить пароль</string>
     <string name="PasscodeEdit">Изменить пароль</string>
     <string name="PasscodeRemove">Удалить пароль</string>
