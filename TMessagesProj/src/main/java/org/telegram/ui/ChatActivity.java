@@ -19034,7 +19034,8 @@ public class ChatActivity extends BaseFragment implements
             int childCount = getChildCount();
             measureChildWithMargins(chatActivityEnterView, widthMeasureSpec, 0, heightMeasureSpec, 0);
 
-            if (inPreviewMode || isInsideContainer || shouldHideBottomFor3ButtonNav()) {
+            final boolean hideBottomForGesture = shouldHideBottomForGesture();
+            if (inPreviewMode || isInsideContainer || shouldHideBottomFor3ButtonNav() || hideBottomForGesture) {
                 inputFieldHeight = 0;
             } else {
                 inputFieldHeight = chatActivityEnterView.getMeasuredHeight();
@@ -19066,9 +19067,6 @@ public class ChatActivity extends BaseFragment implements
                 } else if (child == chatListView || child == chatListThanosEffect) {
                     int contentWidthSpec = MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.EXACTLY);
                     int h = heightSize + blurredViewTopOffset + blurredViewBottomOffset + chatListViewPaddingsAnimator.getCurrentAdditionalHeight();
-                    if (shouldHideBottomForGesture()) {
-                        h += AndroidUtilities.dp(51);
-                    }
                     int contentHeightSpec = MeasureSpec.makeMeasureSpec(
                         Math.max(dp(10), h), View.MeasureSpec.EXACTLY);
                     child.measure(contentWidthSpec, contentHeightSpec);
@@ -28382,10 +28380,7 @@ public class ChatActivity extends BaseFragment implements
         if (!isGesture()) {
             return false;
         }
-        if (bottomChannelButtonsLayout == null || bottomChannelButtonsLayout.getVisibility() != View.VISIBLE) {
-            return false;
-        }
-        if (bottomOverlayChatText == null || bottomOverlayChatText.getVisibility() != View.VISIBLE) {
+        if (bottomOverlayChatText == null) {
             return false;
         }
         if (bottomOverlayStartButton != null && bottomOverlayStartButton.getVisibility() == View.VISIBLE) {
@@ -28621,6 +28616,7 @@ public class ChatActivity extends BaseFragment implements
             showGiftButton = false;
             showSuggestButton = false;
         }
+        final boolean hideBottomForGesture = shouldHideBottomForGesture();
         if (inPreviewMode) {
             bottomViewsVisibilityController.setViewVisible(MESSAGE_SEARCH_CONTAINER, false, false);
             bottomChannelButtonsLayout.setVisibility(View.INVISIBLE);
@@ -28720,7 +28716,7 @@ public class ChatActivity extends BaseFragment implements
                     muteItemGap.setVisibility(View.VISIBLE);
                 }
             }
-            if (isInsideContainer || forceNoBottom || shouldHideBottomFor3ButtonNav()) {
+            if (isInsideContainer || forceNoBottom || shouldHideBottomFor3ButtonNav() || hideBottomForGesture) {
                 bottomChannelButtonsLayout.setVisibility(View.GONE);
                 chatActivityEnterView.setVisibility(View.GONE);
             } else if (isReport()) {
@@ -28788,7 +28784,7 @@ public class ChatActivity extends BaseFragment implements
         bottomChannelButtonsLayout.showButton(ChatActivityChannelButtonsLayout.BUTTON_GIFT, !showSuggestButton && showGiftButton && bottomChannelButtonsLayout.getVisibility() == View.VISIBLE, animated);
         bottomChannelButtonsLayout.showButton(ChatActivityChannelButtonsLayout.BUTTON_GIGA_GROUP_INFO, showGigaGroupButton && bottomChannelButtonsLayout.getVisibility() == View.VISIBLE, animated);
 
-        if (shouldHideBottomForGesture()) {
+        if (hideBottomForGesture) {
             bottomOverlayChatText.setText("");
             chatInputViewsContainer.setVisibility(View.GONE);
             chatInputViewsContainer.setBackgroundWithFadeDrawable(null);
@@ -48226,7 +48222,7 @@ public class ChatActivity extends BaseFragment implements
             pollAddVisibility = animatorPollAddAnswerVisibility.getFloatValue();
         }
 
-        if (!isInsideContainer && !isInPreviewMode() && !shouldHideBottomFor3ButtonNav()) {
+        if (!isInsideContainer && !isInPreviewMode() && !shouldHideBottomFor3ButtonNav() && !shouldHideBottomForGesture()) {
             return lerp(Math.max(lerp(defaultIslandHeight, enterViewIslandHeight, enterViewFactor) * visibility, dp(44)), -dp(7), pollAddVisibility);
         } else {
             return lerp(defaultIslandHeight, enterViewIslandHeight, enterViewFactor) * visibility;
