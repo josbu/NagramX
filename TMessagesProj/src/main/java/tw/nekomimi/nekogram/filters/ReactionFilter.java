@@ -19,7 +19,7 @@ import tw.nekomimi.nekogram.NekoConfig;
 
 public class ReactionFilter {
 
-    public record ReactionCountResult(ArrayList<TLRPC.ReactionCount> counts, int totalCount) {
+    public record ReactionCountResult(ArrayList<TLRPC.ReactionCount> counts, int totalCount, boolean hasReactionsFromOtherUsers) {
     }
 
     public static boolean shouldFilter(int currentAccount, TLRPC.Message message) {
@@ -137,23 +137,33 @@ public class ReactionFilter {
 
     public static ReactionCountResult getReactionCountResult(int currentAccount, long dialogId, TLRPC.TL_messageReactions reactions) {
         if (reactions == null || reactions.results == null) {
-            return new ReactionCountResult(new ArrayList<>(), 0);
+            return new ReactionCountResult(new ArrayList<>(), 0, false);
         }
         if (!shouldFilter(currentAccount, dialogId)) {
-            int totalCount = 0;
-            for (int i = 0; i < reactions.results.size(); i++) {
-                var res = reactions.results.get(i);
-                totalCount += res == null ? 0 : res.count;
+            boolean hasReactionsFromOtherUsers = false;
+            int count = 0;
+            for (TLRPC.ReactionCount r : reactions.results) {
+                if (r == null) {
+                    continue;
+                }
+                count += r.count;
+                if (r.count > 1 || !r.chosen) {
+                    hasReactionsFromOtherUsers = true;
+                }
             }
-            return new ReactionCountResult(reactions.results, totalCount);
+            return new ReactionCountResult(reactions.results, count, hasReactionsFromOtherUsers);
         }
         boolean changed = false;
         int totalCount = 0;
+        boolean hasReactionsFromOtherUsers = false;
         ArrayList<TLRPC.ReactionCount> visible = new ArrayList<>(reactions.results.size());
         for (int i = 0; i < reactions.results.size(); i++) {
             TLRPC.ReactionCount reactionCount = reactions.results.get(i);
             int visibleCount = getFilteredReactionCount(currentAccount, dialogId, reactions, reactionCount);
             totalCount += visibleCount;
+            if (reactionCount != null && visibleCount > 0 && (visibleCount > 1 || !reactionCount.chosen)) {
+                hasReactionsFromOtherUsers = true;
+            }
             if (visibleCount <= 0 && (reactionCount == null || !reactionCount.chosen)) {
                 changed = true;
                 continue;
@@ -165,7 +175,7 @@ public class ReactionFilter {
                 visible.add(copyReactionCountWithCount(reactionCount, visibleCount));
             }
         }
-        return new ReactionCountResult(changed ? visible : reactions.results, totalCount);
+        return new ReactionCountResult(changed ? visible : reactions.results, totalCount, hasReactionsFromOtherUsers);
     }
 
     public static int getReactionCount(int currentAccount, long dialogId, TLRPC.TL_messageReactions reactions, TLRPC.ReactionCount reactionCount) {
