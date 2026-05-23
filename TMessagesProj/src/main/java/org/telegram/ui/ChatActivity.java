@@ -31850,7 +31850,7 @@ public class ChatActivity extends BaseFragment implements
                 icons.add(idx, R.drawable.msg_log);
             }
 
-            if (!isAyuDeleted) {
+            if (!isAyuDeleted && NaConfig.INSTANCE.getEnableSaveDeletedMessages().Bool()) {
                 if (message.messageOwner.ttl > 0 || message.isVoiceOnce() || message.isRoundOnce()) {
                     boolean isExpiredVideo = AyuMessageUtils.isExpiredDocument(message);
                     boolean isExpiredPhoto = AyuMessageUtils.isExpiredPhoto(message);
@@ -31870,6 +31870,8 @@ public class ChatActivity extends BaseFragment implements
                         icons.add(idx, R.drawable.burn_solar);
                     }
                 }
+            }
+            if (!isAyuDeleted) {
                 if (!NekoConfig.sendReadMessagePackets.Bool()
                         && message.messageOwner.from_id != null
                         && message.messageOwner.from_id.user_id != getAccountInstance().getUserConfig().getClientUserId()
