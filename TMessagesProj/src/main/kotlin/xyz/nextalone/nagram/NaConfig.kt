@@ -1455,6 +1455,9 @@ object NaConfig {
             }
             getPreferences().edit { remove("SpringAnimation") }
         }
+        if (!getPreferences().contains(strokeOnViews.key)) {
+            strokeOnViews.changed(SharedConfig.getDevicePerformanceClass() != SharedConfig.PERFORMANCE_CLASS_LOW)
+        }
 
         val mainPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Context.MODE_PRIVATE)
         if (!mainPreferences.contains("photoHighQualityDefault") && getPreferences().contains("SendHighQualityPhoto")) {
