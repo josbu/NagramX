@@ -513,13 +513,6 @@ public class BookmarksActivity extends NekoDelegateFragment {
             ((SizeNotifierFrameLayout) fragmentView).onResume();
         }
 
-        Bulletin.addDelegate(this, new Bulletin.Delegate() {
-            @Override
-            public int getBottomOffset(int tag) {
-                return windowInsetsStateHolder.getCurrentNavigationBarInset();
-            }
-        });
-
         updateActionBarCount();
         updateBookmarks();
     }
@@ -532,8 +525,6 @@ public class BookmarksActivity extends NekoDelegateFragment {
             ((SizeNotifierFrameLayout) fragmentView).onPause();
         }
 
-        Bulletin.removeDelegate(this);
-
         if (scrimPopupWindow != null) {
             scrimPopupWindow.dismiss();
             scrimPopupWindow = null;
@@ -543,8 +534,6 @@ public class BookmarksActivity extends NekoDelegateFragment {
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
-
-        Bulletin.removeDelegate(this);
 
         if (scrimPopupWindow != null) {
             scrimPopupWindow.dismiss();

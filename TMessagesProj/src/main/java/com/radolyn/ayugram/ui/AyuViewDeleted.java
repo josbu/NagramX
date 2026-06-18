@@ -503,8 +503,6 @@ public class AyuViewDeleted extends NekoDelegateFragment {
         NotificationCenter.getInstance(UserConfig.selectedAccount).removeObserver(this, AyuConstants.MESSAGES_DELETED_NOTIFICATION);
         NotificationCenter.getInstance(UserConfig.selectedAccount).removeObserver(this, AyuConstants.DELETED_MEDIA_LOADED_NOTIFICATION);
         NotificationCenter.getInstance(UserConfig.selectedAccount).removeObserver(this, NotificationCenter.voiceTranscriptionUpdate);
-        Bulletin.removeDelegate(this);
-
         if (scrimPopupWindow != null) {
             scrimPopupWindow.dismiss();
             scrimPopupWindow = null;
@@ -541,13 +539,6 @@ public class AyuViewDeleted extends NekoDelegateFragment {
         if (fragmentView instanceof SizeNotifierFrameLayout) {
             ((SizeNotifierFrameLayout) fragmentView).onResume();
         }
-
-        Bulletin.addDelegate(this, new Bulletin.Delegate() {
-            @Override
-            public int getBottomOffset(int tag) {
-                return windowInsetsStateHolder.getCurrentNavigationBarInset();
-            }
-        });
     }
 
     @Override
@@ -557,8 +548,6 @@ public class AyuViewDeleted extends NekoDelegateFragment {
         if (fragmentView instanceof SizeNotifierFrameLayout) {
             ((SizeNotifierFrameLayout) fragmentView).onPause();
         }
-
-        Bulletin.removeDelegate(this);
 
         if (scrimPopupWindow != null) {
             scrimPopupWindow.dismiss();
