@@ -7443,7 +7443,7 @@ public class ChatActivity extends BaseFragment implements
         chatActivityFadeView = new ChatActivityFadeView(context);
         chatActivityFadeView.setup(navbarContentDrawableFactory);
         chatActivityFadeView.setFadeHeightTop(dp(48));
-        chatActivityFadeView.setFadeHeightBottom(shouldHideBottomForGesture() ? 0 : dp(48));
+        chatActivityFadeView.setFadeHeightBottom(dp(48));
         contentView.addView(chatActivityFadeView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
         if (false/* && getDialogId() != getUserConfig().getClientUserId()*/) {
@@ -10844,7 +10844,7 @@ public class ChatActivity extends BaseFragment implements
             return;
         }
         undoView = new UndoView(getContext(), this, false, themeDelegate);
-        undoView.setAdditionalTranslationY(shouldHideBottomForGesture() ? 0 : AndroidUtilities.dp(51));
+        undoView.setAdditionalTranslationY(AndroidUtilities.dp(51));
         contentView.addView(undoView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.LEFT, 8, 0, 8, 8));
     }
 
@@ -11575,16 +11575,9 @@ public class ChatActivity extends BaseFragment implements
     }
 
     private void updatePagedownButtonsPosition() {
-        updatePagedownButtonsPosition(shouldHideBottomForGesture());
-    }
-
-    private void updatePagedownButtonsPosition(boolean hideBottomForGesture) {
         if (sideControlsButtonsLayout != null) {
-            final float bottomOffset = hideBottomForGesture
-                ? chatInputViewsContainer.getInputBubbleHeight() * bottomViewsVisibilityController.getVisibility(MESSAGE_ACTION_CONTAINER)
-                : chatInputViewsContainer.getInputBubbleHeight();
             float baseTranslationY2 = -windowInsetsStateHolder.getAnimatedMaxBottomInset()
-                - bottomOffset
+                - chatInputViewsContainer.getInputBubbleHeight()
                 - getTopicTabsSideSize(TopicsTabsView.Position.BOTTOM)
                 - dp(ChatInputViewsContainer.INPUT_BUBBLE_BOTTOM + 4);
             sideControlsButtonsLayout.setTranslationY(baseTranslationY2);
@@ -12830,7 +12823,7 @@ public class ChatActivity extends BaseFragment implements
         if (undoView != null) {
             undoView.setAdditionalTranslationY(
                 windowInsetsStateHolder.getAnimatedMaxBottomInset() + dp(9 + 7)
-                    + (shouldHideBottomForGesture() ? 0 : chatInputViewsContainer.getInputBubbleHeight() + getTopicTabsSideSize(TopicsTabsView.Position.BOTTOM)));
+                    + chatInputViewsContainer.getInputBubbleHeight() + getTopicTabsSideSize(TopicsTabsView.Position.BOTTOM));
         }
 
         checkUi_topPanelPositions();
@@ -16722,7 +16715,7 @@ public class ChatActivity extends BaseFragment implements
         int maxPositiveUnreadId = Integer.MIN_VALUE;
         int maxNegativeUnreadId = Integer.MAX_VALUE;
         int maxUnreadDate = Integer.MIN_VALUE;
-        int recyclerChatViewHeight = (contentView.getMeasuredHeight() - (inPreviewMode || isInsideContainer || shouldHideBottomForGesture() ? 0 : AndroidUtilities.dp(48)) - chatListView.getTop());
+        int recyclerChatViewHeight = (contentView.getMeasuredHeight() - (inPreviewMode || isInsideContainer ? 0 : AndroidUtilities.dp(48)) - chatListView.getTop());
         pollsToCheck.clear();
         float clipTop = chatListViewPaddingTop;
         float clipTopicTop = chatListViewPaddingTop + dp(28);
@@ -18493,12 +18486,12 @@ public class ChatActivity extends BaseFragment implements
             return false;
         }
 
-        private void drawChildElement(Canvas canvas, float listTop, ChatMessageCell cell, int type, boolean hideBottomForGesture) {
+        private void drawChildElement(Canvas canvas, float listTop, ChatMessageCell cell, int type) {
             int restoreCount = canvas.save();
             float canvasOffsetX = chatListView.getLeft() + cell.getX();
             float canvasOffsetY = chatListView.getY() + cell.getY() + cell.getPaddingTop();
             float alpha = cell.shouldDrawAlphaLayer() ? cell.getAlpha() : 1f;
-            canvas.clipRect(chatListView.getLeft(), listTop, chatListView.getRight(), chatListView.getY() + chatListView.getMeasuredHeight() - blurredViewBottomOffset - windowInsetsStateHolder.getCurrentMaxBottomInset() - (hideBottomForGesture ? 0 : inputIslandHeightCurrent) - dp(9));
+            canvas.clipRect(chatListView.getLeft(), listTop, chatListView.getRight(), chatListView.getY() + chatListView.getMeasuredHeight() - blurredViewBottomOffset - windowInsetsStateHolder.getCurrentMaxBottomInset() - inputIslandHeightCurrent - dp(9));
             canvas.translate(canvasOffsetX, canvasOffsetY);
             cell.setInvalidatesParent(true);
             if (type == 0) {
@@ -18544,7 +18537,6 @@ public class ChatActivity extends BaseFragment implements
 
         @Override
         protected void dispatchDraw(Canvas canvas) {
-            final boolean hideBottomForGesture = shouldHideBottomForGesture();
             chatActivityEnterView.checkAnimation();
             updateChatListViewTopPadding();
             if (invalidateMessagesVisiblePart || (chatListItemAnimator != null && chatListItemAnimator.isRunning())) {
@@ -18552,7 +18544,7 @@ public class ChatActivity extends BaseFragment implements
                 updateMessagesVisiblePart(false);
             }
             updateTextureViewPosition(false, false);
-            updatePagedownButtonsPosition(hideBottomForGesture);
+            updatePagedownButtonsPosition();
             if (scheduledOrNoSoundHint != null && scheduledOrNoSoundHint.isShowing()) {
                 scheduledOrNoSoundHint.updatePosition();
             }
@@ -18721,7 +18713,7 @@ public class ChatActivity extends BaseFragment implements
                             canvas.save();
                             float viewClipBottom2 = getMeasuredHeight()
                                     - windowInsetsStateHolder.getCurrentMaxBottomInset()
-                                    - (hideBottomForGesture ? 0 : inputIslandHeightCurrent)
+                                    - inputIslandHeightCurrent
                                     - dp(9)
                                     - (mentionContainer != null ? mentionContainer.clipBottom() : 0);
 
@@ -18741,7 +18733,7 @@ public class ChatActivity extends BaseFragment implements
                         float viewClipRight = chatListView.getRight();
                         float viewClipBottom = getMeasuredHeight()
                             - windowInsetsStateHolder.getCurrentMaxBottomInset()
-                            - (hideBottomForGesture ? 0 : inputIslandHeightCurrent)
+                            - inputIslandHeightCurrent
                             - getTopicTabsSideSize(TopicsTabsView.Position.BOTTOM)
                             - dp(9);
 
@@ -18900,14 +18892,14 @@ public class ChatActivity extends BaseFragment implements
                     int size = drawTimeAfter.size();
                     if (size > 0) {
                         for (int a = 0; a < size; a++) {
-                            drawChildElement(canvas, listTop, drawTimeAfter.get(a), 0, hideBottomForGesture);
+                            drawChildElement(canvas, listTop, drawTimeAfter.get(a), 0);
                         }
                         drawTimeAfter.clear();
                     }
                     size = drawNamesAfter.size();
                     if (size > 0) {
                         for (int a = 0; a < size; a++) {
-                            drawChildElement(canvas, listTop, drawNamesAfter.get(a), 1, hideBottomForGesture);
+                            drawChildElement(canvas, listTop, drawNamesAfter.get(a), 1);
                         }
                         drawNamesAfter.clear();
                     }
@@ -18918,7 +18910,7 @@ public class ChatActivity extends BaseFragment implements
                             if (cell.getCurrentPosition() == null && !cell.getTransitionParams().animateBackgroundBoundsInner) {
                                 continue;
                             }
-                            drawChildElement(canvas, listTop, cell, 2, hideBottomForGesture);
+                            drawChildElement(canvas, listTop, cell, 2);
                         }
                         drawCaptionAfter.clear();
                     }
@@ -18929,7 +18921,7 @@ public class ChatActivity extends BaseFragment implements
                             if (cell.getCurrentPosition() == null && !cell.getTransitionParams().animateBackgroundBoundsInner) {
                                 continue;
                             }
-                            drawChildElement(canvas, listTop, cell, 3, hideBottomForGesture);
+                            drawChildElement(canvas, listTop, cell, 3);
                         }
                     }
                     if (scrimViewReaction != null && scrimGroup != null) {
@@ -18952,7 +18944,7 @@ public class ChatActivity extends BaseFragment implements
                             if (cell.getCurrentPosition() == null && !cell.getTransitionParams().animateBackgroundBoundsInner) {
                                 continue;
                             }
-                            drawChildElement(canvas, listTop, cell, 4, hideBottomForGesture);
+                            drawChildElement(canvas, listTop, cell, 4);
                         }
                         drawReactionsAfter.clear();
                     }
@@ -19034,7 +19026,7 @@ public class ChatActivity extends BaseFragment implements
                 bottom = (int) chatInputViewsContainer.getInputBubbleBottom();
 
                 top -= (int) ((pullingDownAnimateToActivity == null ? 0 : pullingDownAnimateToActivity.pullingBottomOffset) * pullingDownAnimateProgress);
-                if (!hideBottomForGesture) {
+                if (!shouldHideBottomForGesture()) {
                     pullingDownDrawable.drawBottomPanel(canvas, top, bottom, getMeasuredWidth());
                 }
             }
@@ -19188,8 +19180,7 @@ public class ChatActivity extends BaseFragment implements
             int childCount = getChildCount();
             measureChildWithMargins(chatActivityEnterView, widthMeasureSpec, 0, heightMeasureSpec, 0);
 
-            final boolean hideBottomForGesture = shouldHideBottomForGesture();
-            if (inPreviewMode || isInsideContainer || shouldHideBottomFor3ButtonNav() || hideBottomForGesture) {
+            if (inPreviewMode || isInsideContainer || shouldHideBottomFor3ButtonNav() || shouldHideBottomForGesture()) {
                 inputFieldHeight = 0;
             } else {
                 inputFieldHeight = chatActivityEnterView.getMeasuredHeight();
@@ -28901,18 +28892,6 @@ public class ChatActivity extends BaseFragment implements
         if (!isGesture()) {
             return false;
         }
-        if (bottomOverlayChatText == null) {
-            return false;
-        }
-        if (bottomOverlayStartButton != null && bottomOverlayStartButton.getVisibility() == View.VISIBLE) {
-            return false;
-        }
-        if (bottomOverlayLinksText != null && bottomOverlayLinksText.getVisibility() == View.VISIBLE) {
-            return false;
-        }
-        if (searchItem != null && searchItemVisible) {
-            return false;
-        }
         return chatMode == MODE_DEFAULT && !ChatObject.canWriteToChat(currentChat) && !ChatObject.isNotInChat(currentChat);
     }
     // hide bottom end
@@ -29134,7 +29113,6 @@ public class ChatActivity extends BaseFragment implements
             showGiftButton = false;
             showSuggestButton = false;
         }
-        final boolean hideBottomForGesture = shouldHideBottomForGesture();
         if (inPreviewMode) {
             bottomViewsVisibilityController.setViewVisible(MESSAGE_SEARCH_CONTAINER, false, false);
             bottomChannelButtonsLayout.setVisibility(View.INVISIBLE);
@@ -29234,7 +29212,7 @@ public class ChatActivity extends BaseFragment implements
                     muteItemGap.setVisibility(View.VISIBLE);
                 }
             }
-            if (isInsideContainer || forceNoBottom || shouldHideBottomFor3ButtonNav() || hideBottomForGesture) {
+            if (isInsideContainer || forceNoBottom || shouldHideBottomFor3ButtonNav() || shouldHideBottomForGesture()) {
                 bottomChannelButtonsLayout.setVisibility(View.GONE);
                 chatActivityEnterView.setVisibility(View.GONE);
             } else if (isReport()) {
@@ -29301,13 +29279,6 @@ public class ChatActivity extends BaseFragment implements
         bottomChannelButtonsLayout.showButton(ChatActivityChannelButtonsLayout.BUTTON_DIRECT, showSuggestButton && bottomChannelButtonsLayout.getVisibility() == View.VISIBLE, animated);
         bottomChannelButtonsLayout.showButton(ChatActivityChannelButtonsLayout.BUTTON_GIFT, !showSuggestButton && showGiftButton && bottomChannelButtonsLayout.getVisibility() == View.VISIBLE, animated);
         bottomChannelButtonsLayout.showButton(ChatActivityChannelButtonsLayout.BUTTON_GIGA_GROUP_INFO, showGigaGroupButton && bottomChannelButtonsLayout.getVisibility() == View.VISIBLE, animated);
-
-        if (hideBottomForGesture) {
-            bottomOverlayChatText.setText("");
-            chatActivityFadeView.setFadeHeightBottom(0);
-        } else {
-            chatActivityFadeView.setFadeHeightBottom(dp(48));
-        }
 
         checkRaiseSensors();
     }
@@ -31844,8 +31815,6 @@ public class ChatActivity extends BaseFragment implements
             }
             bottomViewsVisibilityController.setViewVisible(MESSAGE_ACTION_CONTAINER, false, true);
             actionBar.hideActionMode();
-            // Delay updateBottomOverlay to ensure action mode state is properly updated after forward
-            AndroidUtilities.runOnUIThread(() -> updateBottomOverlay(), 50);
         }
         cantDeleteMessagesCount = 0;
         canEditMessagesCount = 0;
@@ -49178,10 +49147,9 @@ public class ChatActivity extends BaseFragment implements
 
     private static final Rect clipBoundsRect = new Rect();
     private void checkUi_BlurHeight() {
-        final float inputHeight = windowInsetsStateHolder.getAnimatedMaxBottomInset()
+        final float inputHeight = shouldHideBottomForGesture() ? 0 : windowInsetsStateHolder.getAnimatedMaxBottomInset()
             + dp(9) + chatInputViewsContainer.getInputBubbleHeight() + dp(7)
-            + getTopicTabsSideSize(TopicsTabsView.Position.BOTTOM)
-            + (shouldHideBottomForGesture() ? windowInsetsStateHolder.getCurrentNavigationBarInset() + dp(9) : 0);
+            + getTopicTabsSideSize(TopicsTabsView.Position.BOTTOM);
 
         chatActivityFadeView.setFadeZoneBottom((int) inputHeight);
 
