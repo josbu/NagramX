@@ -74,7 +74,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import kotlin.Unit;
 import tw.nekomimi.nekogram.helpers.MessageHelper;
@@ -1012,18 +1011,18 @@ public class AyuViewDeleted extends NekoDelegateFragment {
         if (TextUtils.isEmpty(searchQuery)) {
             filteredMessages.addAll(deletedMessages);
         } else {
-            String q = searchQuery.toLowerCase(Locale.getDefault());
+            String q = searchQuery.toLowerCase();
             for (DeletedMessageFull full : deletedMessages) {
                 String text = full.message != null ? full.message.text : null;
-                if (!TextUtils.isEmpty(text) && text.toLowerCase(Locale.getDefault()).contains(q)) {
+                if (!TextUtils.isEmpty(text) && text.toLowerCase().contains(q)) {
                     filteredMessages.add(full);
                     continue;
                 }
-                if (full.message != null && full.message.mediaPath != null && full.message.mediaPath.toLowerCase(Locale.getDefault()).contains(q)) {
+                if (full.message != null && full.message.mediaPath != null && full.message.mediaPath.toLowerCase().contains(q)) {
                     filteredMessages.add(full);
                     continue;
                 }
-                if (full.message != null && full.message.fwdName != null && full.message.fwdName.toLowerCase(Locale.getDefault()).contains(q)) {
+                if (full.message != null && full.message.fwdName != null && full.message.fwdName.toLowerCase().contains(q)) {
                     filteredMessages.add(full);
                 }
             }
